@@ -1,4 +1,5 @@
 import processing.core.PImage;
+
 import java.util.Optional;
 import java.util.List;
 import java.lang.*;
@@ -10,7 +11,9 @@ public class MinerNotFull extends AnimatedEntity {
         super( id, position, images, resourceLimit, 0, actionPeriod, animationPeriod );
     }
 
+
     public void executeActivity(WorldModel world, ImageStore imageStore, EventScheduler scheduler) {
+
         Optional<Entity> notFullTarget = world.findNearest( getPosition(), new Ore( getId(), getPosition(), getActionPeriod(), getImages() ) );
 
         if (!notFullTarget.isPresent() ||
@@ -22,7 +25,7 @@ public class MinerNotFull extends AnimatedEntity {
     }
 
     public boolean transform(WorldModel world, EventScheduler scheduler, ImageStore imageStore) {
-        if (resourceCount >= resourceCount) {
+        if (resourceCount >= resourceLimit) {
             MinerFull miner = new MinerFull( getId(), resourceLimit, getPosition(), getActionPeriod(), animationPeriod, getImages() );
             world.removeEntity( this );
             scheduler.unscheduleAllEvents( this );
@@ -35,7 +38,19 @@ public class MinerNotFull extends AnimatedEntity {
     }
 
     public Point nextPosition(WorldModel world, Point destPos) {
-        int horiz = Integer.signum( destPos.x - getPosition().x );
+
+        List<Point> points;
+        Point pt = getPosition();
+        points = strategy.computePath( pt, destPos, p -> world.withinBounds( p ) && ((world.getOccupancyCell( p ) == null) || (world.getOccupancyCell( p ) instanceof Ore)), (p1, p2) -> p1.adjacent( p2 ),
+                strategy.CARDINAL_NEIGHBORS );
+
+        if (points.size() != 0) {
+            return points.get( 0 );
+        }
+
+        return pt;
+
+        /*int horiz = Integer.signum( destPos.x - getPosition().x );
         Point newPos = new Point( getPosition().x + horiz,
                 getPosition().y );
 
@@ -50,6 +65,8 @@ public class MinerNotFull extends AnimatedEntity {
         }
 
         return newPos;
+        */
+
     }
 
     public boolean moveTo(WorldModel world, Entity target, EventScheduler scheduler) {

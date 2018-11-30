@@ -1,4 +1,5 @@
 import processing.core.PImage;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,18 @@ public class OreBlob extends AnimatedEntity {
     }
 
     public Point nextPosition(WorldModel world, Point destPos) {
+
+        List<Point> points;
+        Point pt = getPosition();
+        points = strategy.computePath( pt, destPos, p -> world.withinBounds( p ) && ((world.getOccupancyCell( p ) == null) || (world.getOccupancyCell( p ) instanceof Vein)), (p1, p2) -> p1.adjacent( p2 ),
+                strategy.CARDINAL_NEIGHBORS );
+        if (points.size() != 0) {
+            return points.get( 0 );
+        }
+
+        return pt;
+
+        /*
         int horiz = Integer.signum( destPos.x - getPosition().x );
         Point newPos = new Point( getPosition().x + horiz, getPosition().y );
 
@@ -52,6 +65,7 @@ public class OreBlob extends AnimatedEntity {
         }
 
         return newPos;
+        */
     }
 
     public boolean moveTo(WorldModel world, Entity target, EventScheduler scheduler) {

@@ -33,6 +33,17 @@ public class MinerFull extends AnimatedEntity {
     }
 
     public Point nextPosition(WorldModel world, Point destPos) {
+        List<Point> points;
+        Point pt = getPosition();
+        points = strategy.computePath( pt, destPos, p -> world.withinBounds( p ) && (world.getOccupancyCell( p ) == null), (p1, p2) -> p1.adjacent( p2 ),
+                strategy.CARDINAL_NEIGHBORS );
+        if (points.size() != 0) {
+            return points.get( 0 );
+        }
+
+        return pt;
+
+     /*
         int horiz = Integer.signum( destPos.x - getPosition().x );
         Point newPos = new Point( getPosition().x + horiz,
                 getPosition().y );
@@ -47,7 +58,7 @@ public class MinerFull extends AnimatedEntity {
             }
         }
         return newPos;
-
+        */
     }
 
     public boolean moveTo(WorldModel world, Entity target, EventScheduler scheduler) {

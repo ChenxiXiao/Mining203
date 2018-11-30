@@ -1,7 +1,5 @@
 import processing.core.PImage;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 final class WorldModel {
@@ -41,6 +39,10 @@ final class WorldModel {
             setOccupancyCell( entity.getPosition(), entity );
             this.entities.add( entity );
         }
+    }
+
+    public Entity[][] getOccupancy() {
+        return occupancy;
     }
 
     public void moveEntity(Entity entity, Point pos) {
